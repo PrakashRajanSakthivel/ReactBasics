@@ -1,6 +1,7 @@
 ﻿import React, { Component } from "react"
 //import TodoItem from "./TodoItem"
 import "./style.css"
+import TodoItem from "./TodoItem";
 
 export class GetToDoList extends Component {
     displayName = GetToDoList.name
@@ -9,9 +10,11 @@ export class GetToDoList extends Component {
         super(props)
         this.state = {
             todoList: [],
-            loading: true
+            loading: true,
+            button_text: 'select all'
         }
         this.handleChange = this.handleChange.bind(this)
+        this.ToggleSelect = this.ToggleSelect.bind(this)
 
         fetch('api/SampleData/Gettodolist')
             .then(response => response.json())
@@ -33,6 +36,19 @@ export class GetToDoList extends Component {
         )
     }
 
+    ToggleSelect(txt_val) {
+        this.setState(prevState => {
+            console.log(prevState.button_text)
+            const flag = prevState.button_text === "select all" ? true : false
+            const selectalltodo = prevState.todoList.map(todo => {
+                todo.isCompleted = flag
+                return todo
+            })
+            const texxxt = txt_val === "select all" ? "de-select all" : "select all"
+            return { todoList: selectalltodo, button_text: texxxt }
+        })
+    }
+
     handleChange(id) {
         this.setState(prevState => {
             const updatedTodo = prevState.todoList.map(todo => {
@@ -51,8 +67,14 @@ export class GetToDoList extends Component {
             GetToDoList.TodoItem(todo, this.handleChange)
         )
         return (
-            <div className="todo-list">
-                {todoitems}
+            <div>
+                <div className="todo-list">
+                    <div className="btn-div-cls">
+                        <button class="btn btn-default" onClick={() => this.ToggleSelect(this.state.button_text)}>{this.state.button_text}</button>
+                    </div>
+                    {todoitems}
+                </div>
+               
             </div>
         )
     }
